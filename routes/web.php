@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -23,3 +24,8 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::post('add-to-cart', [CartController::class, 'add'])->name('addToCart');
+Route::get('delete-from-cart/{id}', [CartController::class, 'delete'])->name('deleteFromCart');
+
+Route::get('checkout',[CheckoutController::class, 'index'])->name('checkout');
+Route::post('add-voucher',[CheckoutController::class, 'addVoucher'])->name('addVoucher');
+Route::post('store',[CheckoutController::class, 'store'])->name('order.store');

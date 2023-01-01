@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function add(Request $req){
         $product = Product::find($req->product);
 
@@ -23,9 +18,14 @@ class CartController extends Controller
         $data['attributes'] = [$product->image];
         $data['assiociatedModel'] = $product;
 
-        \Cart::session(auth()->id())->add($data);
+        \Cart::add($data);
 
-        // dd(\Cart::session(auth()->id())->getContent());
+        // dd(\Cart::getContent());
         return redirect()->back(); 
+    }
+
+    public function delete($id){
+        \Cart::remove($id);
+        return redirect()->back();
     }
 }

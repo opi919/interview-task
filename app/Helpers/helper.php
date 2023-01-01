@@ -1,7 +1,7 @@
 <?php
 
 function cartArray(){
-    $item = \Cart::session(auth()->id())->getContent();
+    $item = \Cart::getContent();
 
     return $item->toArray();
 }
