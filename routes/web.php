@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -29,3 +30,5 @@ Route::get('delete-from-cart/{id}', [CartController::class, 'delete'])->name('de
 Route::get('checkout',[CheckoutController::class, 'index'])->name('checkout');
 Route::post('add-voucher',[CheckoutController::class, 'addVoucher'])->name('addVoucher');
 Route::post('store',[CheckoutController::class, 'store'])->name('order.store');
+
+Route::get('orders',[OrderController::class, 'index'])->name('order.index');

@@ -54,45 +54,55 @@
                 <!-- ACCOUNT -->
                 <div class="col-md-3 clearfix">
                     <div class="header-ctn">
-                        <!-- Cart -->
-                            @php
-                                $items = cartArray();
-                            @endphp
-
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                                    <i class="fa fa-shopping-cart"></i>
-                                    <span>Your Cart</span>
-                                    <div class="qty"><?= count($items) ?></div>
+                        @auth
+                            <div>
+                                <a href="{{ route('order.index') }}">
+                                    <i class="fa fa-heart-o"></i>
+                                    <span>Your Orders</span>
+                                    {{-- <div class="qty">2</div> --}}
                                 </a>
-                                <div class="cart-dropdown">
-                                    <div class="cart-list">
-                                        @foreach ($items as $item)
-                                            <div class="product-widget">
-                                                <div class="product-img">
-                                                    <img src="./electro/img/{{ $item['attributes'][0] }}"
-                                                        alt="">
-                                                </div>
-                                                <div class="product-body">
-                                                    <h3 class="product-name"><a href="#">{{ $item['name'] }}</a>
-                                                    </h3>
-                                                    <h4 class="product-price"><span
-                                                            class="qty">{{ $item['quantity'] }}x</span>${{ $item['price'] }}
-                                                    </h4>
-                                                </div>
-                                                <a href="{{ route('deleteFromCart',$item['id']) }}" class="delete"><i class="fa fa-close"></i></a>
+                            </div>
+                        @endauth
+                        <!-- Cart -->
+                        @php
+                            $items = cartArray();
+                        @endphp
+
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                <i class="fa fa-shopping-cart"></i>
+                                <span>Your Cart</span>
+                                <div class="qty"><?= count($items) ?></div>
+                            </a>
+                            <div class="cart-dropdown">
+                                <div class="cart-list">
+                                    @foreach ($items as $item)
+                                        <div class="product-widget">
+                                            <div class="product-img">
+                                                <img src="./electro/img/{{ $item['attributes'][0] }}" alt="">
                                             </div>
-                                        @endforeach
-                                    </div>
-                                    <div class="cart-summary">
-                                        <small><?= count($items) ?> Item(s) selected</small>
-                                        <h5>SUBTOTAL: ${{ Cart::getTotal() }}</h5>
-                                    </div>
-                                    <div class="cart-btns">
-                                        <a href="{{ route('checkout') }}" style="width: 100% !important">Checkout <i class="fa fa-arrow-circle-right"></i></a>
-                                    </div>
+                                            <div class="product-body">
+                                                <h3 class="product-name"><a href="#">{{ $item['name'] }}</a>
+                                                </h3>
+                                                <h4 class="product-price"><span
+                                                        class="qty">{{ $item['quantity'] }}x</span>${{ $item['price'] }}
+                                                </h4>
+                                            </div>
+                                            <a href="{{ route('deleteFromCart', $item['id']) }}" class="delete"><i
+                                                    class="fa fa-close"></i></a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="cart-summary">
+                                    <small><?= count($items) ?> Item(s) selected</small>
+                                    <h5>SUBTOTAL: ${{ Cart::getTotal() }}</h5>
+                                </div>
+                                <div class="cart-btns">
+                                    <a href="{{ route('checkout') }}" style="width: 100% !important">Checkout <i
+                                            class="fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
+                        </div>
                         <!-- /Cart -->
 
                         <!-- Menu Toogle -->

@@ -17,13 +17,15 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->unsignedBigInteger('shipping_id');
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('voucher_id')->nullable();
             $table->string('order_no')->unique();
-            $table->string('voucher_code')->nullable();
+            $table->string('total');
             $table->string('status')->default('pending');
             $table->timestamps();
 
             $table->foreign('shipping_id')->references('id')->on('shippings')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('voucher_id')->references('id')->on('vouchers')->onDelete('cascade');
         });
     }
 

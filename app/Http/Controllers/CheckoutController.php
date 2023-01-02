@@ -17,16 +17,20 @@ class CheckoutController extends Controller
 
     public function index()
     {
-        // add condition to cart
-        $condition = new \Darryldecode\Cart\CartCondition(array(
-            'name' => 'Shipping Fee',
-            'type' => 'shipping',
-            'target' => 'total', // this condition will be applied to cart's subtotal when getSubTotal() is called.
-            'value' => '+100',
-        ));
-        \Cart::condition($condition);
+        if (\Cart::isEmpty()) {
+            return redirect('/')->with(['alert_type' => 'error', 'message' => 'Cart is empty']);
+        } else {
+            // add condition to cart
+            $condition = new \Darryldecode\Cart\CartCondition(array(
+                'name' => 'Shipping Fee',
+                'type' => 'shipping',
+                'target' => 'total', // this condition will be applied to cart's subtotal when getSubTotal() is called.
+                'value' => '+100',
+            ));
+            \Cart::condition($condition);
 
-        return view('checkout');
+            return view('checkout');
+        }
     }
 
     public function addVoucher(Request $req)
@@ -48,46 +52,46 @@ class CheckoutController extends Controller
         return redirect()->back()->with(['alert_type' => 'error', 'message' => 'Voucher not found']);
     }
 
-    public function store(Request $req){
-        if(\Cart::isEmpty()){
-            return redirect()->back()->with(['alert_type' => 'error', 'message' => 'Cart is empty']);
+    public function store(Request $req)
+    {
+
+        $this->validate(
+            $req,
+            [
+                'name' => 'required|string',
+                'email' => 'required|email',
+                'address' => 'required|string',
+            ]
+        );
+
+        // dd($req->all());
+
+        $ship = new Shipping();
+        $ship->name = $req->name;
+        $ship->email = $req->email;
+        $ship->address = $req->address;
+        $ship->save();
+
+        $voucher = Voucher::where('code', $req->voucher)->first();
+        $order = new Order();
+        $order->shipping_id = $ship->id;
+        $order->user_id = auth()->user()->id;
+        $order->order_no = uniqid();
+        $order->total = \Cart::getTotal();
+        if ($req->voucher) {
+            $order->voucher_id = $voucher->id;
         }
-        else{
-            $this->validate(
-                $req,
-                [
-                    'name' => 'required|string',
-                    'email' => 'required|email',
-                    'address' => 'required|string',
-                ]
-            );
 
-            // dd($req->all());
+        $order->save();
 
-            $ship = new Shipping();
-            $ship->name = $req->name;
-            $ship->email = $req->email;
-            $ship->address = $req->address;
-            $ship->save();
-
-            $order = new Order();
-            $order->shipping_id = $ship->id;
-            $order->user_id = auth()->user()->id;   
-            $order->order_no = uniqid();
-            if($req->voucher){
-                $order->voucher_code = $req->voucher;
-            }
-            $order->save();
-
-            $items = \Cart::getContent();
-            foreach($items as $item){
-                $order->products()->attach($item['id'], ['quantity' => $item['quantity']]);
-            }
-
-            \Cart::clearCartConditions();
-            \Cart::clear();
-
-            return redirect('/')->with(['alert_type' => 'success', 'message' => 'Order placed successfully']);
+        $items = \Cart::getContent();
+        foreach ($items as $item) {
+            $order->products()->attach($item['id'], ['quantity' => $item['quantity'], 'price' => $item['price']]);
         }
+
+        \Cart::clearCartConditions();
+        \Cart::clear();
+
+        return redirect('/')->with(['alert_type' => 'success', 'message' => 'Order placed successfully']);
     }
 }
